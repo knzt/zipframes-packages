@@ -42,52 +42,21 @@ importers:
         specifier: ^8.46.4
         version: 8.70.0(eslint@9.39.5(jiti@2.6.1))(typescript@5.9.3)
 
-  packages/authenticator:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/authenticator: {}
 
-  packages/communication:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
-      '@zipframes/schemas':
-        specifier: workspace:*
-        version: link:../schemas
+  packages/communication: {}
 
   packages/core: {}
 
-  packages/logger:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/logger: {}
 
-  packages/schemas:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/schemas: {}
 
-  packages/telemetry:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/telemetry: {}
 
-  packages/test-toolkit:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/test-toolkit: {}
 
-  packages/value-objects:
-    dependencies:
-      '@zipframes/core':
-        specifier: workspace:*
-        version: link:../core
+  packages/value-objects: {}
 
 packages:
 
