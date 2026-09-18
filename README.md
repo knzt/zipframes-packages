@@ -1,6 +1,6 @@
 # ZipFrames Packages
 
-Pacotes npm compartilhados pelos serviços do [ZipFrames](https://github.com/knzt/zip-frames), o sistema de processamento de vídeos da FIAP X.
+Pacotes npm compartilhados pelos serviços do [ZipFrames](https://github.com/knzt/zipframes), o sistema de processamento de vídeos da FIAP X.
 
 Eles vivem fora do repositório da aplicação de propósito: publicados e versionados, cada serviço declara a versão que usa e adota uma mudança quando decide subir de versão, em vez de ser afetado no mesmo instante em que o pacote muda.
 
