@@ -16,9 +16,7 @@ export type BaseErrorOptions = {
 /**
  * Base error for the packages and the services.
  *
- * Carries a stable, machine readable code and optional details. It knows
- * nothing about HTTP or end user wording: mapping an error to a status code or
- * to a message is the presentation layer's job.
+ * Carries a stable, machine readable code and optional details.
  */
 export abstract class BaseError extends Error {
   abstract readonly kind: ErrorKind;

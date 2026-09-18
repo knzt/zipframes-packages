@@ -20,9 +20,7 @@ export class ApplicationError extends BaseError {
 /**
  * A dependency failed: database, broker, storage, network.
  *
- * `retryable` says whether trying again may succeed. Consumers use it to
- * decide between requeueing the message and sending it to the dead letter
- * queue, without inspecting the class.
+ * `retryable` says whether trying again may succeed.
  */
 export class InfrastructureError extends BaseError {
   readonly kind: ErrorKind = "infrastructure";
@@ -47,9 +45,6 @@ export class ValidationError extends DomainError {}
 
 /**
  * The resource does not exist, or does not exist for whoever asked.
- *
- * Asking for someone else's resource is a `NotFoundError`, not a
- * `ForbiddenError`: the caller should not learn that it exists.
  */
 export class NotFoundError extends ApplicationError {}
 

@@ -3,9 +3,6 @@ declare const brandTag: unique symbol;
 /**
  * Brand tags a primitive with a name, so TypeScript rejects a raw string where
  * an Email is expected.
- *
- * The tag only exists at compile time: at runtime the value is still the
- * original primitive.
  */
 export type Brand<TValue, TBrand extends string> = TValue & {
   readonly [brandTag]: TBrand;
@@ -30,9 +27,6 @@ export type Unbrand<TBranded> = TBranded extends string
 
 /**
  * Tags a value that has already been validated.
- *
- * Only the code that just validated the value should call it, usually a value
- * object parser. Anywhere else it is a claim without proof.
  *
  * @example
  * type Email = Brand<string, "Email">;
