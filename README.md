@@ -6,16 +6,16 @@ Eles vivem fora do repositório da aplicação de propósito: publicados e versi
 
 ## Pacotes
 
-| Pacote | Conteúdo |
-|---|---|
-| [`@zipframes/schemas`](packages/schemas) | Contratos de eventos e de API, organizados por serviço em `src/services` |
-| [`@zipframes/value-objects`](packages/value-objects) | Value objects genéricos e o value object base |
-| [`@zipframes/core`](packages/core) | `Result`, branded types e erros base |
-| [`@zipframes/communication`](packages/communication) | Publisher, consumer, retry e DLQ |
-| [`@zipframes/logger`](packages/logger) | Logs estruturados com correlation ID |
-| [`@zipframes/telemetry`](packages/telemetry) | Métricas Prometheus e tracing OpenTelemetry |
-| [`@zipframes/authenticator`](packages/authenticator) | Validação de JWT via JWKS |
-| [`@zipframes/test-toolkit`](packages/test-toolkit) | Base de testes de integração com Testcontainers |
+| Pacote                                               | Conteúdo                                                                 |
+| ---------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`@zipframes/schemas`](packages/schemas)             | Contratos de eventos e de API, organizados por serviço em `src/services` |
+| [`@zipframes/value-objects`](packages/value-objects) | Value objects genéricos e o value object base                            |
+| [`@zipframes/core`](packages/core)                   | `Result`, branded types e erros base                                     |
+| [`@zipframes/communication`](packages/communication) | Publisher, consumer, retry e DLQ                                         |
+| [`@zipframes/logger`](packages/logger)               | Logs estruturados com correlation ID                                     |
+| [`@zipframes/telemetry`](packages/telemetry)         | Métricas Prometheus e tracing OpenTelemetry                              |
+| [`@zipframes/authenticator`](packages/authenticator) | Validação de JWT via JWKS                                                |
+| [`@zipframes/test-toolkit`](packages/test-toolkit)   | Base de testes de integração com Testcontainers                          |
 
 ## O que entra aqui
 
@@ -29,11 +29,11 @@ Entra aqui:
 
 ## Documentação
 
-| Documento | Conteúdo |
-|---|---|
-| [Estrutura](docs/estrutura.md) | Organização do repositório e de cada pacote |
-| [Value objects](docs/value-objects.md) | O contrato do value object base e como criar os seus |
-| [Versionamento e publicação](docs/versionamento.md) | Semver, changesets e o fluxo de release |
+| Documento                                           | Conteúdo                                             |
+| --------------------------------------------------- | ---------------------------------------------------- |
+| [Estrutura](docs/estrutura.md)                      | Organização do repositório e de cada pacote          |
+| [Value objects](docs/value-objects.md)              | O contrato do value object base e como criar os seus |
+| [Versionamento e publicação](docs/versionamento.md) | Semver, changesets e o fluxo de release              |
 
 ## Estrutura
 
