@@ -13,14 +13,6 @@ Métricas Prometheus e tracing OpenTelemetry.
 - métricas de negócio específicas de um serviço, que são definidas nele
 - logs, que vivem em `@zipframes/logger`
 
-## Estrutura
-
-```
-src/metrics
-src/tracing
-test
-```
-
 Separado do `logger` porque traz um SDK pesado e nem todo serviço precisa dele desde o começo.
 
 ## Status

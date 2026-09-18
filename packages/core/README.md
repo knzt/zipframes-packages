@@ -8,11 +8,6 @@ Tipos e utilitários de domínio sem dependência externa nenhuma.
 - branded types
 - erros base de domínio e de aplicação
 
-## O que não é
-
-- qualquer coisa que importe uma biblioteca externa
-- helpers de infraestrutura, como cliente HTTP ou acesso a banco
-
 ## Estrutura
 
 ```

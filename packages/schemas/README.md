@@ -27,8 +27,6 @@ test
 
 A pasta de cada serviço traz os contratos que **aquele serviço publica**. Quem consome importa do publicador, o que deixa a titularidade do contrato explícita no import.
 
-Mudança incompatível em um contrato é major, e a versão nova do evento convive com a anterior até todos os consumidores migrarem.
-
 ## Status
 
 Estrutura e documentação definidas. Setup, configuração e implementação pendentes.

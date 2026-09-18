@@ -1,6 +1,6 @@
 # ZipFrames Packages
 
-Pacotes npm compartilhados pelos serviços do [ZipFrames](https://github.com/knzt/zipframes), o sistema de processamento de vídeos da FIAP X.
+Pacotes npm compartilhados pelos serviços do [ZipFrames](https://github.com/knzt/zipframes).
 
 Eles vivem fora do repositório da aplicação de propósito: publicados e versionados, cada serviço declara a versão que usa e adota uma mudança quando decide subir de versão, em vez de ser afetado no mesmo instante em que o pacote muda.
 
@@ -19,8 +19,6 @@ Eles vivem fora do repositório da aplicação de propósito: publicados e versi
 
 ## O que entra aqui
 
-A regra é simples: **o pacote carrega forma, o serviço decide política.**
-
 Um CPF válido é o mesmo em qualquer sistema do mundo, então a validação é biblioteca. Já a política de senha, as extensões de vídeo aceitas e o `VideoStatus` são regras de um contexto específico e ficam dentro do serviço que as define.
 
 Entra aqui:
@@ -28,14 +26,6 @@ Entra aqui:
 - o que é universal, definido por uma norma, uma RFC ou um órgão externo;
 - o que é puramente técnico, sem regra de negócio de nenhum contexto;
 - contratos que mais de um serviço precisa enxergar da mesma forma.
-
-Não entra aqui:
-
-- regra de negócio de um bounded context;
-- código que só um serviço usa;
-- qualquer coisa que force dois serviços a mudarem juntos.
-
-Se um pacote começa a ganhar um método que só faz sentido para um serviço, é sinal de que aquilo pertence ao serviço.
 
 ## Documentação
 

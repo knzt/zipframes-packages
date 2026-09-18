@@ -39,8 +39,6 @@ flowchart BT
   toolkit --> core
 ```
 
-`logger` não depende de `telemetry`: um serviço precisa logar desde o primeiro dia, e o SDK de tracing é pesado demais para vir junto por padrão.
-
 ## Pacotes
 
 ### `schemas`

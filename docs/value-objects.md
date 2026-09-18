@@ -43,19 +43,5 @@ E devolve o construtor, o tipo e os utilitários de igualdade e serialização.
 |---|---|---|
 | `contact` | `Email`, `Phone` | Formato de e-mail e telefone, com normalização |
 | `document` | `Cpf`, `Cnpj` | Dígitos verificadores, definidos pela Receita Federal |
-| `address` | `PostalCode`, `Address` | Formato de CEP e composição de endereço |
 
 Todos são construídos com a mesma base, então servem de exemplo vivo do padrão.
-
-## O que fica nos serviços
-
-Value objects que carregam regra de um contexto continuam dentro do serviço que os define:
-
-| Value object | Onde vive | Por quê |
-|---|---|---|
-| `Password` | auth-service | O formato de senha não existe: existe política (tamanho, complexidade, vazamento), e ela é do contexto de Identidade |
-| `VideoStatus` | video-service | As transições válidas são regra do ciclo de vida do vídeo |
-| `FileName` | video-service | As extensões aceitas são decisão do negócio |
-| `StorageKey` | video-service | A convenção de chaves é do contexto que organiza o storage |
-
-O que esses casos aproveitam do pacote é a base, não a implementação.
