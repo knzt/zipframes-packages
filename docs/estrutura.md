@@ -26,7 +26,7 @@ flowchart BT
   comm["@zipframes/communication"]
   logger["@zipframes/logger"]
   telemetry["@zipframes/telemetry"]
-  auth["@zipframes/authorizer"]
+  auth["@zipframes/authenticator"]
   toolkit["@zipframes/test-toolkit"]
 
   vo --> core
@@ -110,7 +110,7 @@ src/
 └── tracing/         # inicialização do OpenTelemetry e propagação de contexto
 ```
 
-### `authorizer`
+### `authenticator`
 
 ```
 src/
@@ -118,7 +118,7 @@ src/
 └── verify/          # verificação de assinatura, emissor, audiência e expiração
 ```
 
-Valida tokens. Não emite nenhum: a emissão pertence ao auth-service.
+Verifica quem é o usuário. Não emite tokens, que é papel do auth-service, e não decide o que ele pode fazer, que é regra de cada serviço.
 
 ### `test-toolkit`
 
