@@ -1,0 +1,135 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      turbo:
+        specifier: ^2.5.8
+        version: 2.11.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/authenticator:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/communication:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+      '@zipframes/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+
+  packages/core: {}
+
+  packages/logger:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/schemas:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/telemetry:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/test-toolkit:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/value-objects:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:*
+        version: link:../core
+
+packages:
+
+  '@turbo/darwin-64@2.11.1':
+    resolution: {integrity: sha512-hmuxQFaISY7/6X9Sn/leocFVeN2u8n8q0qjRX5dpLtRU/P5ijGeweZ9nxbYLEFImp+k0nytqJ3ROAVq1SFSEMg==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@turbo/darwin-arm64@2.11.1':
+    resolution: {integrity: sha512-ozmYSprvSh9AokcqzkkFHPQv8LjrL37ilTQt4Y4wSJdiXKcmTRt9E0zUDN5r3T5F8KR2xRnEfxYpH9z5AeQcrA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@turbo/linux-64@2.11.1':
+    resolution: {integrity: sha512-1mudFKuWUPjC/h06RucqPw3tf538AJCJLjIYC4lvqSsd+ZNZOakQxH5m0c9uArasa/IYxA6UU8/3mdON1WIy0Q==}
+    cpu: [x64]
+    os: [android, linux]
+
+  '@turbo/linux-arm64@2.11.1':
+    resolution: {integrity: sha512-3dXa9eh8YgzqWRDcs/F8xmTAH7cZEb/FA7+hxNYQZvylu5Fu94q62LKYLrPutsAKARFvSRus29MvESHvgrdWNQ==}
+    cpu: [arm64]
+    os: [android, linux]
+
+  '@turbo/windows-64@2.11.1':
+    resolution: {integrity: sha512-WWyZfn4VtUCJFbMOxShQLu9V8O7y4yFbccRV1lliqiZJ6SMk08eraWFT+h4ZzZgE8qLS6KxnAJA+C0H1laWNcg==}
+    cpu: [x64]
+    os: [win32]
+
+  '@turbo/windows-arm64@2.11.1':
+    resolution: {integrity: sha512-7Cr9R/Q0FrRfNniLBDsb5YAR3tMRjRiqkkp/GW9KpGc4LcAeRHPJc33eCZO6RsCfUCaQhKkx655s7iRBVxfjCw==}
+    cpu: [arm64]
+    os: [win32]
+
+  turbo@2.11.1:
+    resolution: {integrity: sha512-ZmfHqh0i7bHOcFyfef4AuinI1M0/UOJ9bcwYMA/D68xAKQTng5kIH8ay9hcq5eB3ydG+DTDSmKiiEW+OWWovFw==}
+    hasBin: true
+
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+snapshots:
+
+  '@turbo/darwin-64@2.11.1':
+    optional: true
+
+  '@turbo/darwin-arm64@2.11.1':
+    optional: true
+
+  '@turbo/linux-64@2.11.1':
+    optional: true
+
+  '@turbo/linux-arm64@2.11.1':
+    optional: true
+
+  '@turbo/windows-64@2.11.1':
+    optional: true
+
+  '@turbo/windows-arm64@2.11.1':
+    optional: true
+
+  turbo@2.11.1:
+    optionalDependencies:
+      '@turbo/darwin-64': 2.11.1
+      '@turbo/darwin-arm64': 2.11.1
+      '@turbo/linux-64': 2.11.1
+      '@turbo/linux-arm64': 2.11.1
+      '@turbo/windows-64': 2.11.1
+      '@turbo/windows-arm64': 2.11.1
+
+  typescript@5.9.3: {}
