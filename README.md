@@ -14,7 +14,7 @@ Eles vivem fora do repositório da aplicação de propósito: publicados e versi
 | [`@zipframes/communication`](packages/communication) | Publisher, consumer, retry e DLQ |
 | [`@zipframes/logger`](packages/logger) | Logs estruturados com correlation ID |
 | [`@zipframes/telemetry`](packages/telemetry) | Métricas Prometheus e tracing OpenTelemetry |
-| [`@zipframes/authorizer`](packages/authorizer) | Validação de JWT via JWKS |
+| [`@zipframes/authenticator`](packages/authenticator) | Validação de JWT via JWKS |
 | [`@zipframes/test-toolkit`](packages/test-toolkit) | Base de testes de integração com Testcontainers |
 
 ## O que entra aqui
@@ -56,7 +56,7 @@ zipframes-packages/
 │   ├── communication/
 │   ├── logger/
 │   ├── telemetry/
-│   ├── authorizer/
+│   ├── authenticator/
 │   └── test-toolkit/
 └── docs/
 ```
