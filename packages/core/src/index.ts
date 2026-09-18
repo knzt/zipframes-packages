@@ -23,4 +23,11 @@ export {
   DomainError,
   ApplicationError,
   InfrastructureError,
+  ValidationError,
+  NotFoundError,
+  ConflictError,
+  UnauthorizedError,
+  ForbiddenError,
+  TimeoutError,
+  UnavailableError,
 } from "./errors/index.js";

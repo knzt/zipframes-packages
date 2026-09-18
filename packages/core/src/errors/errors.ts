@@ -1,27 +1,69 @@
 import { BaseError } from "./base-error.js";
-import type { ErrorKind } from "./base-error.js";
+import type { BaseErrorOptions, ErrorKind } from "./base-error.js";
 
 /**
- * Invariante do domínio violada: um e-mail com formato inválido, uma
- * transição de status que a máquina de estados não permite.
+ * A domain invariant was violated: an email with an invalid format, a status
+ * transition the state machine does not allow.
  */
 export class DomainError extends BaseError {
   readonly kind: ErrorKind = "domain";
 }
 
 /**
- * Regra de caso de uso barrou a operação: um recurso não encontrado, um
- * conflito com o estado atual, uma permissão ausente.
+ * A use case rule stopped the operation: a missing resource, a conflict with
+ * the current state, a missing permission.
  */
 export class ApplicationError extends BaseError {
   readonly kind: ErrorKind = "application";
 }
 
 /**
- * Falha em uma dependência externa: banco, broker, storage, rede.
+ * A dependency failed: database, broker, storage, network.
  *
- * Costuma ser transitória, e é o tipo que orienta a política de retry.
+ * `retryable` says whether trying again may succeed. Consumers use it to
+ * decide between requeueing the message and sending it to the dead letter
+ * queue, without inspecting the class.
  */
 export class InfrastructureError extends BaseError {
   readonly kind: ErrorKind = "infrastructure";
+  readonly retryable: boolean;
+
+  constructor(
+    code: string,
+    message: string,
+    options: BaseErrorOptions & { readonly retryable?: boolean } = {},
+  ) {
+    super(code, message, options);
+    this.retryable = options.retryable ?? true;
+  }
+
+  override toJSON(): Record<string, unknown> {
+    return { ...super.toJSON(), retryable: this.retryable };
+  }
 }
+
+/** A value did not pass validation: format, range, required field. */
+export class ValidationError extends DomainError {}
+
+/**
+ * The resource does not exist, or does not exist for whoever asked.
+ *
+ * Asking for someone else's resource is a `NotFoundError`, not a
+ * `ForbiddenError`: the caller should not learn that it exists.
+ */
+export class NotFoundError extends ApplicationError {}
+
+/** The operation clashes with the current state, such as confirming an upload twice. */
+export class ConflictError extends ApplicationError {}
+
+/** No valid identity was presented. */
+export class UnauthorizedError extends ApplicationError {}
+
+/** The identity is valid but is not allowed to perform the operation. */
+export class ForbiddenError extends ApplicationError {}
+
+/** A deadline was exceeded. Retryable by default. */
+export class TimeoutError extends InfrastructureError {}
+
+/** A dependency is unreachable or refusing work. Retryable by default. */
+export class UnavailableError extends InfrastructureError {}

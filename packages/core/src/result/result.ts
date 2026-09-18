@@ -1,9 +1,9 @@
 /**
- * Result representa o desfecho de uma operação que pode falhar de forma
- * esperada: validação de formato, violação de invariante, regra de negócio.
+ * Result represents the outcome of an operation that can fail in an expected
+ * way: format validation, a broken invariant, a business rule.
  *
- * Erros esperados são valores, não exceções. Exceções ficam reservadas para
- * falhas inesperadas, que ninguém sabia tratar.
+ * Expected errors are values, not exceptions. Exceptions are reserved for
+ * unexpected failures, the ones nobody knew how to handle.
  */
 export type Ok<TValue> = {
   readonly ok: true;
@@ -17,51 +17,51 @@ export type Err<TError> = {
 
 export type Result<TValue, TError> = Ok<TValue> | Err<TError>;
 
-/** Cria um resultado de sucesso. */
+/** Creates a successful result. */
 export const ok = <TValue>(value: TValue): Ok<TValue> => ({ ok: true, value });
 
-/** Cria um resultado de falha. */
+/** Creates a failed result. */
 export const err = <TError>(error: TError): Err<TError> => ({ ok: false, error });
 
-/** Estreita o tipo para o caso de sucesso. */
+/** Narrows the type to the success case. */
 export const isOk = <TValue, TError>(result: Result<TValue, TError>): result is Ok<TValue> =>
   result.ok;
 
-/** Estreita o tipo para o caso de falha. */
+/** Narrows the type to the failure case. */
 export const isErr = <TValue, TError>(result: Result<TValue, TError>): result is Err<TError> =>
   !result.ok;
 
-/** Transforma o valor de sucesso, mantendo a falha intacta. */
+/** Transforms the success value, leaving a failure untouched. */
 export const map = <TValue, TError, TNext>(
   result: Result<TValue, TError>,
   fn: (value: TValue) => TNext,
 ): Result<TNext, TError> => (result.ok ? ok(fn(result.value)) : result);
 
-/** Transforma o erro, mantendo o sucesso intacto. */
+/** Transforms the error, leaving a success untouched. */
 export const mapErr = <TValue, TError, TNextError>(
   result: Result<TValue, TError>,
   fn: (error: TError) => TNextError,
 ): Result<TValue, TNextError> => (result.ok ? result : err(fn(result.error)));
 
-/** Encadeia outra operação que também pode falhar. */
+/** Chains another operation that can also fail. */
 export const andThen = <TValue, TError, TNext, TNextError>(
   result: Result<TValue, TError>,
   fn: (value: TValue) => Result<TNext, TNextError>,
 ): Result<TNext, TError | TNextError> => (result.ok ? fn(result.value) : result);
 
-/** Devolve o valor de sucesso ou o padrão informado. */
+/** Returns the success value or the given fallback. */
 export const unwrapOr = <TValue, TError>(
   result: Result<TValue, TError>,
   fallback: TValue,
 ): TValue => (result.ok ? result.value : fallback);
 
-/** Devolve o valor de sucesso ou o padrão calculado a partir do erro. */
+/** Returns the success value or a fallback computed from the error. */
 export const unwrapOrElse = <TValue, TError>(
   result: Result<TValue, TError>,
   fn: (error: TError) => TValue,
 ): TValue => (result.ok ? result.value : fn(result.error));
 
-/** Resolve os dois casos em um único valor. */
+/** Collapses both cases into a single value. */
 export const match = <TValue, TError, TOut>(
   result: Result<TValue, TError>,
   handlers: {
@@ -71,10 +71,10 @@ export const match = <TValue, TError, TOut>(
 ): TOut => (result.ok ? handlers.ok(result.value) : handlers.err(result.error));
 
 /**
- * Combina vários resultados em um só. Devolve todos os valores quando todos
- * são sucesso, ou o primeiro erro encontrado.
+ * Combines several results into one. Returns every value when all of them
+ * succeed, or the first error it finds.
  *
- * Útil ao construir um agregado a partir de vários value objects.
+ * Useful when building an aggregate out of several value objects.
  */
 export const all = <TValue, TError>(
   results: readonly Result<TValue, TError>[],

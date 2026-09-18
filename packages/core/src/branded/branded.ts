@@ -1,22 +1,22 @@
 declare const brandTag: unique symbol;
 
 /**
- * Brand marca um tipo primitivo com um nome, de modo que o TypeScript recuse
- * uma string crua onde se espera um Email.
+ * Brand tags a primitive with a name, so TypeScript rejects a raw string where
+ * an Email is expected.
  *
- * A marca existe apenas em tempo de compilação: em tempo de execução o valor
- * continua sendo o primitivo original.
+ * The tag only exists at compile time: at runtime the value is still the
+ * original primitive.
  */
 export type Brand<TValue, TBrand extends string> = TValue & {
   readonly [brandTag]: TBrand;
 };
 
 /**
- * Remove a marca, devolvendo o primitivo que está por baixo.
+ * Strips the tag, giving back the primitive underneath.
  *
- * O TypeScript não consegue inferir o lado esquerdo de uma interseção, então a
- * volta é feita pelo primitivo correspondente, que é o que os value objects
- * marcam na prática.
+ * TypeScript cannot infer the left side of an intersection, so the mapping
+ * goes through the matching primitive, which is what value objects tag in
+ * practice.
  */
 export type Unbrand<TBranded> = TBranded extends string
   ? string
@@ -29,10 +29,10 @@ export type Unbrand<TBranded> = TBranded extends string
         : TBranded;
 
 /**
- * Aplica a marca a um valor já validado.
+ * Tags a value that has already been validated.
  *
- * Só deve ser chamada por quem acabou de validar o valor, normalmente o parse
- * de um value object. Fora daí, ela é uma afirmação sem prova.
+ * Only the code that just validated the value should call it, usually a value
+ * object parser. Anywhere else it is a claim without proof.
  *
  * @example
  * type Email = Brand<string, "Email">;

@@ -30,6 +30,13 @@ describe("public package surface", () => {
         "DomainError",
         "ApplicationError",
         "InfrastructureError",
+        "ValidationError",
+        "NotFoundError",
+        "ConflictError",
+        "UnauthorizedError",
+        "ForbiddenError",
+        "TimeoutError",
+        "UnavailableError",
       ]),
     );
   });

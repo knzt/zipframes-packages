@@ -1,9 +1,10 @@
 /**
- * Origem do erro, usada para decidir o tratamento sem inspecionar a classe.
+ * Where the error came from, so callers can decide how to handle it without
+ * inspecting the class.
  *
- * - domain: uma invariante do domínio foi violada
- * - application: uma regra de caso de uso barrou a operação
- * - infrastructure: uma dependência externa falhou
+ * - domain: a domain invariant was violated
+ * - application: a use case rule stopped the operation
+ * - infrastructure: a dependency failed
  */
 export type ErrorKind = "domain" | "application" | "infrastructure";
 
@@ -13,11 +14,11 @@ export type BaseErrorOptions = {
 };
 
 /**
- * Erro base dos pacotes e dos serviços.
+ * Base error for the packages and the services.
  *
- * Carrega um código estável, legível por máquina, e detalhes opcionais. Não
- * conhece HTTP nem mensagens para o usuário final: a tradução do erro é
- * trabalho da camada de apresentação.
+ * Carries a stable, machine readable code and optional details. It knows
+ * nothing about HTTP or end user wording: mapping an error to a status code or
+ * to a message is the presentation layer's job.
  */
 export abstract class BaseError extends Error {
   abstract readonly kind: ErrorKind;
@@ -43,5 +44,5 @@ export abstract class BaseError extends Error {
   }
 }
 
-/** Estreita um valor desconhecido para BaseError. */
+/** Narrows an unknown value to BaseError. */
 export const isBaseError = (value: unknown): value is BaseError => value instanceof BaseError;
