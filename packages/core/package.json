@@ -1,7 +1,7 @@
 {
   "name": "@zipframes/core",
   "version": "0.0.0",
-  "description": "Result, branded types e erros base de domínio e de aplicação, sem dependência externa.",
+  "description": "Result, branded types e erros base de dom\u00ednio e de aplica\u00e7\u00e3o, sem depend\u00eancia externa.",
   "license": "MIT",
   "type": "module",
   "publishConfig": {
@@ -21,6 +21,13 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.4",
+    "vitest": "^3.2.4"
   }
 }
