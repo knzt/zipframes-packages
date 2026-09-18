@@ -8,14 +8,14 @@ Sem ela, cada serviço inventaria seu jeito de fazer value object e a única coi
 
 ## O que a base garante
 
-| Característica | O que significa |
-|---|---|
-| Criação validada | A construção passa por uma função de parse que aceita ou rejeita o valor. Não existe value object inválido |
-| Erro como valor | A criação devolve `Result`, e não lança exceção. Erro de formato é esperado, não excepcional |
-| Imutabilidade | O valor é congelado depois de criado. Qualquer mudança gera um novo objeto |
-| Igualdade por valor | Dois value objects com o mesmo conteúdo são iguais, independentemente da referência. É o que os distingue de entidades |
-| Serialização previsível | `toString` e `toJSON` definidos, para que adapters não precisem conhecer o formato interno |
-| Branded type | O TypeScript recusa uma `string` crua onde se espera um `Email` |
+| Característica          | O que significa                                                                                                        |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Criação validada        | A construção passa por uma função de parse que aceita ou rejeita o valor. Não existe value object inválido             |
+| Erro como valor         | A criação devolve `Result`, e não lança exceção. Erro de formato é esperado, não excepcional                           |
+| Imutabilidade           | O valor é congelado depois de criado. Qualquer mudança gera um novo objeto                                             |
+| Igualdade por valor     | Dois value objects com o mesmo conteúdo são iguais, independentemente da referência. É o que os distingue de entidades |
+| Serialização previsível | `toString` e `toJSON` definidos, para que adapters não precisem conhecer o formato interno                             |
+| Branded type            | O TypeScript recusa uma `string` crua onde se espera um `Email`                                                        |
 
 ## O que a base não faz
 
@@ -39,9 +39,9 @@ E devolve o construtor, o tipo e os utilitários de igualdade e serialização.
 
 ## Value objects do pacote
 
-| Grupo | Value objects | Regra |
-|---|---|---|
-| `contact` | `Email`, `Phone` | Formato de e-mail e telefone, com normalização |
-| `document` | `Cpf`, `Cnpj` | Dígitos verificadores, definidos pela Receita Federal |
+| Grupo      | Value objects    | Regra                                                 |
+| ---------- | ---------------- | ----------------------------------------------------- |
+| `contact`  | `Email`, `Phone` | Formato de e-mail e telefone, com normalização        |
+| `document` | `Cpf`, `Cnpj`    | Dígitos verificadores, definidos pela Receita Federal |
 
 Todos são construídos com a mesma base, então servem de exemplo vivo do padrão.

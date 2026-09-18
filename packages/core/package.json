@@ -1,7 +1,7 @@
 {
   "name": "@zipframes/core",
   "version": "0.0.0",
-  "description": "Result, branded types e erros base de dom\u00ednio e de aplica\u00e7\u00e3o, sem depend\u00eancia externa.",
+  "description": "Result, branded types e erros base de domínio e de aplicação, sem dependência externa.",
   "license": "MIT",
   "type": "module",
   "publishConfig": {
@@ -12,6 +12,18 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./result": {
+      "types": "./dist/result/index.d.ts",
+      "default": "./dist/result/index.js"
+    },
+    "./branded": {
+      "types": "./dist/branded/index.d.ts",
+      "default": "./dist/branded/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors/index.d.ts",
+      "default": "./dist/errors/index.js"
     }
   },
   "main": "./dist/index.js",

@@ -19,6 +19,20 @@ test
 
 Junto com `value-objects`, é o único pacote que a camada de domínio dos serviços pode importar.
 
+## Import
+
+O pacote pode ser importado inteiro ou por subcaminho, quando você quiser deixar explícito de onde vem cada coisa:
+
+```ts
+import { ok, err, DomainError } from "@zipframes/core";
+
+import { ok, err } from "@zipframes/core/result";
+import { DomainError } from "@zipframes/core/errors";
+import { brand } from "@zipframes/core/branded";
+```
+
+As duas formas entregam a mesma implementação.
+
 ## Erros
 
 | Classe              | Origem           | Quando                                              |

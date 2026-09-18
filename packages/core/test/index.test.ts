@@ -48,3 +48,26 @@ describe("public package surface", () => {
     expect(new core.DomainError("X", "y")).toBeInstanceOf(core.BaseError);
   });
 });
+
+describe("subpath exports", () => {
+  it("serves the same implementations as the package root", async () => {
+    const [root, result, errors, branded] = await Promise.all([
+      import("@zipframes/core"),
+      import("@zipframes/core/result"),
+      import("@zipframes/core/errors"),
+      import("@zipframes/core/branded"),
+    ]);
+
+    expect(result.ok).toBe(root.ok);
+    expect(errors.DomainError).toBe(root.DomainError);
+    expect(branded.brand).toBe(root.brand);
+  });
+
+  it("keeps each subpath scoped to its own module", async () => {
+    const result = await import("@zipframes/core/result");
+    const errors = await import("@zipframes/core/errors");
+
+    expect(Object.keys(result)).not.toContain("DomainError");
+    expect(Object.keys(errors)).not.toContain("ok");
+  });
+});
