@@ -9,106 +9,106 @@ import {
 } from "../src/errors/index.js";
 
 describe("DomainError", () => {
-  it("guarda código, mensagem e origem", () => {
-    const erro = new DomainError("INVALID_EMAIL", "e-mail em formato inválido");
+  it("holds code, message and origin", () => {
+    const error = new DomainError("INVALID_EMAIL", "email has an invalid format");
 
-    expect(erro.code).toBe("INVALID_EMAIL");
-    expect(erro.message).toBe("e-mail em formato inválido");
-    expect(erro.kind).toBe("domain");
-    expect(erro.name).toBe("DomainError");
+    expect(error.code).toBe("INVALID_EMAIL");
+    expect(error.message).toBe("email has an invalid format");
+    expect(error.kind).toBe("domain");
+    expect(error.name).toBe("DomainError");
   });
 
-  it("continua sendo um Error", () => {
-    const erro = new DomainError("X", "y");
+  it("is still an Error", () => {
+    const error = new DomainError("X", "y");
 
-    expect(erro).toBeInstanceOf(Error);
-    expect(erro).toBeInstanceOf(BaseError);
-    expect(erro.stack).toBeDefined();
+    expect(error).toBeInstanceOf(Error);
+    expect(error).toBeInstanceOf(BaseError);
+    expect(error.stack).toBeDefined();
   });
 });
 
-describe("kind por tipo de erro", () => {
-  it("distingue as três origens", () => {
+describe("kind per error type", () => {
+  it("tells the three origins apart", () => {
     expect(new DomainError("A", "a").kind).toBe("domain");
     expect(new ApplicationError("B", "b").kind).toBe("application");
     expect(new InfrastructureError("C", "c").kind).toBe("infrastructure");
   });
 });
 
-describe("details e cause", () => {
-  it("guarda detalhes quando informados", () => {
-    const erro = new ApplicationError("VIDEO_NOT_FOUND", "vídeo não encontrado", {
+describe("details and cause", () => {
+  it("holds details when they are given", () => {
+    const error = new ApplicationError("VIDEO_NOT_FOUND", "video not found", {
       details: { videoId: "abc" },
     });
 
-    expect(erro.details).toEqual({ videoId: "abc" });
+    expect(error.details).toEqual({ videoId: "abc" });
   });
 
-  it("deixa os detalhes indefinidos quando não informados", () => {
+  it("leaves details undefined when they are not given", () => {
     expect(new ApplicationError("X", "y").details).toBeUndefined();
   });
 
-  it("preserva a causa original", () => {
-    const original = new Error("conexão recusada");
-    const erro = new InfrastructureError("BROKER_UNAVAILABLE", "broker indisponível", {
+  it("preserves the original cause", () => {
+    const original = new Error("connection refused");
+    const error = new InfrastructureError("BROKER_UNAVAILABLE", "broker unavailable", {
       cause: original,
     });
 
-    expect(erro.cause).toBe(original);
+    expect(error.cause).toBe(original);
   });
 });
 
 describe("toJSON", () => {
-  it("serializa sem detalhes quando não há", () => {
-    expect(new DomainError("INVALID_STATUS", "transição inválida").toJSON()).toEqual({
+  it("serializes without details when there are none", () => {
+    expect(new DomainError("INVALID_STATUS", "invalid transition").toJSON()).toEqual({
       name: "DomainError",
       kind: "domain",
       code: "INVALID_STATUS",
-      message: "transição inválida",
+      message: "invalid transition",
     });
   });
 
-  it("inclui os detalhes quando há", () => {
-    const erro = new DomainError("INVALID_STATUS", "transição inválida", {
-      details: { de: "DONE", para: "PROCESSING" },
+  it("includes details when there are some", () => {
+    const error = new DomainError("INVALID_STATUS", "invalid transition", {
+      details: { from: "DONE", to: "PROCESSING" },
     });
 
-    expect(erro.toJSON()).toEqual({
+    expect(error.toJSON()).toEqual({
       name: "DomainError",
       kind: "domain",
       code: "INVALID_STATUS",
-      message: "transição inválida",
-      details: { de: "DONE", para: "PROCESSING" },
+      message: "invalid transition",
+      details: { from: "DONE", to: "PROCESSING" },
     });
   });
 });
 
-describe("subclasses dos serviços", () => {
+describe("service subclasses", () => {
   class VideoNotFoundError extends ApplicationError {
     constructor(videoId: string) {
-      super("VIDEO_NOT_FOUND", "vídeo não encontrado", { details: { videoId } });
+      super("VIDEO_NOT_FOUND", "video not found", { details: { videoId } });
     }
   }
 
-  it("herdam origem e ganham o próprio nome", () => {
-    const erro = new VideoNotFoundError("abc");
+  it("inherit the origin and get their own name", () => {
+    const error = new VideoNotFoundError("abc");
 
-    expect(erro.name).toBe("VideoNotFoundError");
-    expect(erro.kind).toBe("application");
-    expect(erro).toBeInstanceOf(ApplicationError);
-    expect(erro.details).toEqual({ videoId: "abc" });
+    expect(error.name).toBe("VideoNotFoundError");
+    expect(error.kind).toBe("application");
+    expect(error).toBeInstanceOf(ApplicationError);
+    expect(error.details).toEqual({ videoId: "abc" });
   });
 });
 
 describe("isBaseError", () => {
-  it("reconhece os erros do pacote", () => {
+  it("recognizes errors from this package", () => {
     expect(isBaseError(new DomainError("A", "a"))).toBe(true);
     expect(isBaseError(new InfrastructureError("B", "b"))).toBe(true);
   });
 
-  it("recusa qualquer outra coisa", () => {
-    expect(isBaseError(new Error("comum"))).toBe(false);
-    expect(isBaseError("texto")).toBe(false);
+  it("rejects anything else", () => {
+    expect(isBaseError(new Error("plain"))).toBe(false);
+    expect(isBaseError("text")).toBe(false);
     expect(isBaseError(undefined)).toBe(false);
   });
 });

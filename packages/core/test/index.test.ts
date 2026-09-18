@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import * as core from "../src/index.js";
 
-describe("superfície pública do pacote", () => {
-  it("exporta os utilitários de Result", () => {
+describe("public package surface", () => {
+  it("exports the Result helpers", () => {
     expect(Object.keys(core)).toEqual(
       expect.arrayContaining([
         "ok",
@@ -21,7 +21,7 @@ describe("superfície pública do pacote", () => {
     );
   });
 
-  it("exporta o utilitário de marca e os erros base", () => {
+  it("exports the brand helper and the base errors", () => {
     expect(Object.keys(core)).toEqual(
       expect.arrayContaining([
         "brand",
@@ -34,10 +34,10 @@ describe("superfície pública do pacote", () => {
     );
   });
 
-  it("entrega as mesmas implementações dos módulos internos", () => {
-    const resultado = core.map(core.ok(2), (n) => n * 2);
+  it("re-exports the same implementations as the inner modules", () => {
+    const result = core.map(core.ok(2), (n) => n * 2);
 
-    expect(resultado).toEqual({ ok: true, value: 4 });
+    expect(result).toEqual({ ok: true, value: 4 });
     expect(new core.DomainError("X", "y")).toBeInstanceOf(core.BaseError);
   });
 });

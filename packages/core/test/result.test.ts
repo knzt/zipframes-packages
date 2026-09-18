@@ -14,110 +14,112 @@ import {
   unwrapOrElse,
 } from "../src/result/index.js";
 
-describe("ok e err", () => {
-  it("cria um sucesso com o valor informado", () => {
+describe("ok and err", () => {
+  it("creates a success holding the given value", () => {
     expect(ok(42)).toEqual({ ok: true, value: 42 });
   });
 
-  it("cria uma falha com o erro informado", () => {
-    expect(err("formato inválido")).toEqual({ ok: false, error: "formato inválido" });
+  it("creates a failure holding the given error", () => {
+    expect(err("invalid format")).toEqual({ ok: false, error: "invalid format" });
   });
 });
 
-describe("isOk e isErr", () => {
-  it("reconhece o sucesso", () => {
+describe("isOk and isErr", () => {
+  it("recognizes a success", () => {
     expect(isOk(ok(1))).toBe(true);
     expect(isErr(ok(1))).toBe(false);
   });
 
-  it("reconhece a falha", () => {
+  it("recognizes a failure", () => {
     expect(isErr(err("x"))).toBe(true);
     expect(isOk(err("x"))).toBe(false);
   });
 });
 
 describe("map", () => {
-  it("transforma o valor do sucesso", () => {
+  it("transforms the success value", () => {
     expect(map(ok(2), (n) => n * 3)).toEqual(ok(6));
   });
 
-  it("não chama a função quando é falha", () => {
-    let chamou = false;
-    const resultado = map(err<string>("x"), (n: number) => {
-      chamou = true;
+  it("does not call the function on a failure", () => {
+    let called = false;
+    const result = map(err<string>("x"), (n: number) => {
+      called = true;
       return n;
     });
 
-    expect(chamou).toBe(false);
-    expect(resultado).toEqual(err("x"));
+    expect(called).toBe(false);
+    expect(result).toEqual(err("x"));
   });
 });
 
 describe("mapErr", () => {
-  it("transforma o erro", () => {
-    expect(mapErr(err("baixo"), (e) => e.toUpperCase())).toEqual(err("BAIXO"));
+  it("transforms the error", () => {
+    expect(mapErr(err("low"), (e) => e.toUpperCase())).toEqual(err("LOW"));
   });
 
-  it("não altera o sucesso", () => {
-    expect(mapErr(ok(1), () => "outro")).toEqual(ok(1));
+  it("leaves a success untouched", () => {
+    expect(mapErr(ok(1), () => "other")).toEqual(ok(1));
   });
 });
 
 describe("andThen", () => {
-  const positivo = (n: number) => (n > 0 ? ok(n) : err("precisa ser positivo"));
+  const positive = (n: number) => (n > 0 ? ok(n) : err("must be positive"));
 
-  it("encadeia quando o anterior deu certo", () => {
-    expect(andThen(ok(5), positivo)).toEqual(ok(5));
-    expect(andThen(ok(-1), positivo)).toEqual(err("precisa ser positivo"));
+  it("chains when the previous step succeeded", () => {
+    expect(andThen(ok(5), positive)).toEqual(ok(5));
+    expect(andThen(ok(-1), positive)).toEqual(err("must be positive"));
   });
 
-  it("interrompe a cadeia na primeira falha", () => {
-    let chamou = false;
-    const resultado = andThen(err<string>("falhou antes"), (n: number) => {
-      chamou = true;
-      return positivo(n);
+  it("short-circuits on the first failure", () => {
+    let called = false;
+    const result = andThen(err<string>("failed earlier"), (n: number) => {
+      called = true;
+      return positive(n);
     });
 
-    expect(chamou).toBe(false);
-    expect(resultado).toEqual(err("falhou antes"));
+    expect(called).toBe(false);
+    expect(result).toEqual(err("failed earlier"));
   });
 });
 
-describe("unwrapOr e unwrapOrElse", () => {
-  it("devolve o valor quando é sucesso", () => {
+describe("unwrapOr and unwrapOrElse", () => {
+  it("returns the value on a success", () => {
     expect(unwrapOr(ok(1), 99)).toBe(1);
     expect(unwrapOrElse(ok(1), () => 99)).toBe(1);
   });
 
-  it("devolve o padrão quando é falha", () => {
+  it("returns the fallback on a failure", () => {
     expect(unwrapOr(err<string>("x"), 99)).toBe(99);
-    expect(unwrapOrElse(err("tamanho"), (e) => e.length)).toBe(7);
+    expect(unwrapOrElse(err("length"), (e) => e.length)).toBe(6);
   });
 });
 
 describe("match", () => {
-  it("resolve os dois casos em um único valor", () => {
-    const descrever = (resultado: ReturnType<typeof ok<number>> | ReturnType<typeof err<string>>) =>
-      match(resultado, {
-        ok: (n) => `valor ${String(n)}`,
-        err: (e) => `erro ${e}`,
+  it("collapses both cases into a single value", () => {
+    const describeResult = (
+      result: ReturnType<typeof ok<number>> | ReturnType<typeof err<string>>,
+    ) =>
+      match(result, {
+        ok: (n) => `value ${String(n)}`,
+        err: (e) => `error ${e}`,
       });
 
-    expect(descrever(ok(7))).toBe("valor 7");
-    expect(descrever(err("grave"))).toBe("erro grave");
+    expect(describeResult(ok(7))).toBe("value 7");
+    expect(describeResult(err("fatal"))).toBe("error fatal");
   });
 });
 
 describe("all", () => {
-  it("devolve todos os valores quando todos são sucesso", () => {
+  it("returns every value when all succeed", () => {
     expect(all([ok(1), ok(2), ok(3)])).toEqual(ok([1, 2, 3]));
   });
 
-  it("devolve o primeiro erro encontrado", () => {
-    expect(all([ok(1), err("segundo"), err("terceiro")])).toEqual(err("segundo"));
+  it("returns the first error it finds", () => {
+    expect(all([ok(1), err("second"), err("third")])).toEqual(err("second"));
   });
 
-  it("aceita lista vazia", () => {
+  it("accepts an empty list", () => {
     expect(all([])).toEqual(ok([]));
   });
 });

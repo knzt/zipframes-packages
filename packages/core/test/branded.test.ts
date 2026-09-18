@@ -8,37 +8,37 @@ type UserId = Brand<string, "UserId">;
 type FrameCount = Brand<number, "FrameCount">;
 
 describe("brand", () => {
-  it("mantém o valor original em tempo de execução", () => {
+  it("keeps the original value at runtime", () => {
     const email: Email = brand<Email>("hellen@example.com");
 
     expect(email).toBe("hellen@example.com");
     expect(typeof email).toBe("string");
   });
 
-  it("funciona com outros primitivos", () => {
+  it("works with other primitives", () => {
     const frames: FrameCount = brand<FrameCount>(42);
 
     expect(frames).toBe(42);
     expect(frames + 1).toBe(43);
   });
 
-  it("continua aceitando o valor marcado onde se espera o primitivo", () => {
+  it("is still accepted where the primitive is expected", () => {
     const email: Email = brand<Email>("hellen@example.com");
-    const cru: string = email;
-    const desmarcado: Unbrand<Email> = email;
+    const raw: string = email;
+    const unbranded: Unbrand<Email> = email;
 
-    expect(cru).toBe(desmarcado);
+    expect(raw).toBe(unbranded);
   });
 
-  it("recusa, em tempo de compilação, um primitivo cru e outra marca", () => {
+  it("rejects a raw primitive and a different brand at compile time", () => {
     const email: Email = brand<Email>("hellen@example.com");
 
-    // @ts-expect-error uma string crua não é um Email
-    const semMarca: Email = "hellen@example.com";
+    // @ts-expect-error a raw string is not an Email
+    const unmarked: Email = "hellen@example.com";
 
-    // @ts-expect-error um Email não é um UserId
-    const outraMarca: UserId = email;
+    // @ts-expect-error an Email is not a UserId
+    const otherBrand: UserId = email;
 
-    expect(semMarca).toBe(outraMarca);
+    expect(unmarked).toBe(otherBrand);
   });
 });
