@@ -8,3 +8,9 @@ Value objects genéricos e a base para criar os seus dentro de cada serviço.
 - a base que padroniza criação validada, imutabilidade, igualdade por valor, serialização e branded type
 
 O contrato da base está em [docs/value-objects.md](../../docs/value-objects.md).
+
+## Status
+
+Estrutura e documentação definidas. Setup, configuração e implementação pendentes.
+
+Ainda não depende de `@zipframes/core`: a dependência entra no `package.json` junto com o primeiro código que a usa, não antes.
