@@ -4,11 +4,11 @@
 
 Cada pacote tem sua própria versão e segue [semver](https://semver.org/lang/pt-BR/):
 
-| Mudança | Versão |
-|---|---|
-| Correção sem mudar a API | patch |
-| Novidade compatível, como um campo opcional ou uma função nova | minor |
-| Qualquer coisa que quebre quem já usa | major |
+| Mudança                                                        | Versão |
+| -------------------------------------------------------------- | ------ |
+| Correção sem mudar a API                                       | patch  |
+| Novidade compatível, como um campo opcional ou uma função nova | minor  |
+| Qualquer coisa que quebre quem já usa                          | major  |
 
 Para o `schemas` a régua é mais rígida, porque ele é o published language entre serviços: **tornar um campo obrigatório, remover um campo ou mudar o tipo de um campo existente é major**, mesmo que o TypeScript não reclame. Quem valida a mensagem em tempo de execução vai reclamar.
 
