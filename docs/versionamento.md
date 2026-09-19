@@ -32,6 +32,23 @@ Quando `@zipframes/core` sobe de versão, `@zipframes/value-objects` (que vai de
 
 A única exceção é mecânica, não de conteúdo: se a versão nova do `core` ficar fora da faixa (`^`) que o `value-objects` declara no `package.json`, o Changesets sobe o `value-objects` em patch só para corrigir essa faixa, sem gerar mudança de comportamento nem entrada de changelog além de "dependência atualizada". É o `updateInternalDependents: "out-of-range"` do `.changeset/config.json`, o modo mais conservador que a ferramenta oferece: nenhum pacote é tocado por conveniência, só quando a faixa declarada deixaria de fazer sentido.
 
+## Testar antes do merge: snapshots
+
+Todo pull request para a `main` que tenha um changeset pendente (`.github/workflows/prerelease.yml`) publica automaticamente uma versão de teste dos pacotes que ele muda, sem tocar na versão real:
+
+1. O workflow roda `changeset status --since=origin/main`. Sem changeset novo introduzido pelo PR, ele não faz nada — é assim que se sabe que o PR é de `feat` ou `fix` sem depender de ler a mensagem do commit: a convenção deste repositório é que toda mudança visível vem com changeset, então "tem changeset" e "é feat ou fix" coincidem na prática.
+2. Havendo changeset, ele roda `changeset version --snapshot pr<número>` numa cópia descartável do repositório, nunca commitada. A versão fica no formato `0.1.0-pr7-20260101120000`: o próximo número real, seguido da tag do PR e de um timestamp.
+3. Publica no GitHub Packages com `changeset publish --tag pr<número>`, então o pacote fica instalável sem disputar a tag `latest` com a versão de verdade.
+4. Comenta no PR a versão publicada de cada pacote, atualizando o mesmo comentário a cada novo push, em vez de acumular um por commit.
+
+Para testar:
+
+```bash
+pnpm add @zipframes/core@pr7
+```
+
+O merge do PR não promove esse snapshot a versão real. Quem decide a versão definitiva continua sendo o changeset que já está no PR, pelo fluxo normal descrito acima.
+
 ## Onde os pacotes são publicados
 
 No **GitHub Packages**, no escopo `@zipframes`. Consumir exige apontar o escopo para o registry do GitHub em um `.npmrc`:

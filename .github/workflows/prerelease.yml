@@ -1,0 +1,128 @@
+# Publishes a snapshot version of the packages changed in a pull request, so
+# they can be installed and tested before the PR is merged.
+#
+# It relies on the changeset already present in the PR, per this repository's
+# convention that every feat or fix comes with one (see docs/versionamento.md
+# and the PR template). No changeset, no snapshot: there is nothing to
+# version, and this workflow quietly does nothing.
+#
+# The snapshot never touches the real release: it does not consume the
+# changeset, does not bump the committed package.json, and is published under
+# a dist-tag named after the PR (pr<number>), never `latest`.
+name: prerelease
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: prerelease-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  packages: write
+
+jobs:
+  snapshot:
+    name: Publish snapshot
+    runs-on: ubuntu-latest
+    # Forks don't carry the token this job needs to publish, and shouldn't be
+    # trusted with one. Their PRs simply don't get a snapshot.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: "@zipframes"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm turbo run build --filter=./packages/*
+
+      - name: Check for pending changesets
+        id: status
+        run: |
+          pnpm exec changeset status --since=origin/main --output=status.json
+          node -e '
+            const { releases } = require("./status.json");
+            const has = releases.length > 0;
+            console.log(has ? `Packages to snapshot: ${releases.map((r) => r.name).join(", ")}` : "No pending changeset, skipping.");
+            require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `has-changesets=${has}\n`);
+          '
+
+      - name: Version as a snapshot
+        if: steps.status.outputs.has-changesets == 'true'
+        run: pnpm exec changeset version --snapshot pr${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish snapshot
+        if: steps.status.outputs.has-changesets == 'true'
+        id: publish
+        run: |
+          pnpm exec changeset publish --tag pr${{ github.event.pull_request.number }}
+          node -e '
+            const { releases } = require("./status.json");
+            const fs = require("fs");
+            const lines = releases.map((r) => {
+              const pkg = require(`./packages/${r.name.replace("@zipframes/", "")}/package.json`);
+              return `- \`${r.name}@${pkg.version}\``;
+            });
+            fs.writeFileSync("snapshot-summary.md", lines.join("\n"));
+          '
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on the pull request
+        if: steps.status.outputs.has-changesets == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const list = fs.readFileSync("snapshot-summary.md", "utf8");
+            const marker = "<!-- prerelease-snapshot -->";
+            const body = [
+              marker,
+              "**Snapshot published for this PR.** Install it to test before merging:",
+              "",
+              list,
+              "",
+              "It won't be promoted by merging this PR: the real version is decided by the changeset already in it, through the normal release flow.",
+            ].join("\n");
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
