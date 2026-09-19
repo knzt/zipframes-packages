@@ -51,6 +51,19 @@ zipframes-packages/
 └── docs/
 ```
 
+## Contribuindo
+
+```bash
+pnpm install          # instala as dependências do monorepo
+pnpm build             # builda todos os pacotes
+pnpm test:coverage     # roda os testes com cobertura
+pnpm lint              # ESLint
+pnpm format            # confere a formatação (pnpm format:write para corrigir)
+pnpm changeset         # descreve a mudança feita, para entrar no PR
+```
+
+Todo PR que muda o comportamento de um pacote inclui um changeset. Veja [docs/versionamento.md](docs/versionamento.md) para o fluxo completo de versão e publicação.
+
 ## Status
 
-O repositório está na fase de estrutura e documentação. Setup, configurações base e implementação dos pacotes ainda não foram feitos.
+Fundação pronta: monorepo, lint, formatação, hooks de commit, Changesets e o workflow de publicação. `@zipframes/core` implementado. Os demais pacotes ainda são só estrutura.

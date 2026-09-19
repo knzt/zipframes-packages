@@ -18,3 +18,5 @@ Separado do `logger` porque traz um SDK pesado e nem todo serviço precisa dele 
 ## Status
 
 Estrutura e documentação definidas. Setup, configuração e implementação pendentes.
+
+Ainda não depende de `@zipframes/core`: a dependência entra no `package.json` junto com o primeiro código que a usa, não antes.

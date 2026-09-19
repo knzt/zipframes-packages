@@ -30,3 +30,5 @@ A pasta de cada serviço traz os contratos que **aquele serviço publica**. Quem
 ## Status
 
 Estrutura e documentação definidas. Setup, configuração e implementação pendentes.
+
+Ainda não depende de `@zipframes/core`: a dependência entra no `package.json` junto com o primeiro código que a usa, não antes.
