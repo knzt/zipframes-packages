@@ -59,10 +59,9 @@ pnpm build             # builda todos os pacotes
 pnpm test:coverage     # roda os testes com cobertura
 pnpm lint              # ESLint
 pnpm format            # confere a formatação (pnpm format:write para corrigir)
-pnpm changeset         # descreve a mudança feita, para entrar no PR
 ```
 
-Todo PR que muda o comportamento de um pacote inclui um changeset. Veja [docs/versionamento.md](docs/versionamento.md) para o fluxo completo de versão e publicação.
+O changeset de cada PR é gerado sozinho a partir dos commits `feat`/`fix` (Conventional Commits), e commitado de volta na própria branch — não precisa rodar `pnpm changeset` à mão, a menos que a mudança mereça um resumo mais rico do que a mensagem do commit carrega. Veja [docs/versionamento.md](docs/versionamento.md) para o fluxo completo de versão e publicação.
 
 ## Status
 

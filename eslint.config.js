@@ -18,4 +18,15 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // CI helper scripts: plain Node, run directly with `node`, never bundled
+    // or type-checked as part of a package.
+    files: [".github/scripts/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        console: "readonly",
+      },
+    },
+  },
 );
