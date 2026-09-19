@@ -1,11 +1,21 @@
 # Version and publish the @zipframes/* packages.
 #
-# On every push to main, checks for pending changesets:
-#   - if there are any, opens or updates a "Version Packages" PR with the
-#     computed versions and changelog;
-#   - once that PR is merged, this workflow runs again, finds no pending
-#     changesets, and publishes the versions it just merged to GitHub
-#     Packages instead.
+# On every push to main:
+#   - if this push carries no changeset yet, one is generated from its feat
+#     and fix commits (.github/scripts/generate-changeset.mjs) and committed
+#     straight to main. A changeset added by hand in the merged PR always
+#     wins: this step only runs when none is found. Pushing with the default
+#     GITHUB_TOKEN does not trigger another workflow run, so this cannot loop.
+#   - changesets/action then checks for pending changesets:
+#       - if there are any, it opens or updates a "Version Packages" PR with
+#         the computed versions and changelog;
+#       - once that PR is merged, this workflow runs again, finds no pending
+#         changesets, and publishes the versions it just merged to GitHub
+#         Packages instead.
+#
+# In the normal case this fallback never fires: the prerelease workflow
+# already commits the changeset to the PR branch before it merges. It exists
+# for anything that reaches main without going through that workflow.
 name: release
 
 on:
@@ -41,6 +51,31 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Check for an existing changeset
+        id: existing
+        run: |
+          count=$(ls .changeset/*.md 2>/dev/null | wc -l)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Generate a changeset from this push's commits
+        if: steps.existing.outputs.count == '0'
+        id: generated
+        run: |
+          before="${{ github.event.before }}"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            before="HEAD~1"
+          fi
+          node .github/scripts/generate-changeset.mjs --from "$before" --to "${{ github.sha }}"
+
+      - name: Commit the generated changeset
+        if: steps.generated.outputs.created == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "${{ steps.generated.outputs.path }}"
+          git commit -m "chore(changeset): add changeset for ${{ github.sha }}"
+          git push origin HEAD:main
 
       - name: Build packages
         run: pnpm turbo run build --filter=./packages/*

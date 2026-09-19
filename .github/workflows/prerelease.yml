@@ -1,14 +1,27 @@
-# Publishes a snapshot version of the packages changed in a pull request, so
-# they can be installed and tested before the PR is merged.
+# Publishes a snapshot version of the packages a pull request changes, so
+# they can be installed and tested before it merges.
 #
-# It relies on the changeset already present in the PR, per this repository's
-# convention that every feat or fix comes with one (see docs/versionamento.md
-# and the PR template). No changeset, no snapshot: there is nothing to
-# version, and this workflow quietly does nothing.
+# A snapshot is published when either is true:
+#   - the commits pushed since the last run (all of them, on the first run)
+#     include a feat or fix touching a package;
+#   - the push added a changeset by hand (`pnpm changeset`), which always
+#     wins over the automatic one below.
+# Anything else — a chore, a doc fix, an amended commit message — publishes
+# nothing: the previous snapshot, if any, is still there to test.
 #
-# The snapshot never touches the real release: it does not consume the
-# changeset, does not bump the committed package.json, and is published under
-# a dist-tag named after the PR (pr<number>), never `latest`.
+# When it does publish, the changeset behind it is generated from the PR's
+# feat and fix commits (.github/scripts/generate-changeset.mjs) into a single
+# file, auto-pr-<number>.md, recomputed from the whole PR every time so it
+# never misses a package a later commit touched. That file is committed
+# straight to the PR branch, so it merges into main with the rest of the PR
+# and the release workflow finds it already there — no second generation at
+# merge time. A changeset added by hand is never touched or duplicated.
+#
+# The snapshot version looks like 0.1.0-pr7-20260101120000: the real next
+# version, the PR number, and a timestamp. It publishes under the `pr7`
+# dist-tag, never `latest`, and none of this consumes the real changeset or
+# bumps the committed package.json — the actual version is still decided by
+# the normal release flow when the PR merges.
 name: prerelease
 
 on:
@@ -21,7 +34,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   packages: write
 
@@ -35,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
@@ -50,29 +63,79 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Decide whether this push deserves a snapshot
+        id: gate
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          number="${{ github.event.pull_request.number }}"
+          auto_file=".changeset/auto-pr-${number}.md"
+
+          before="${{ github.event.before }}"
+          if [ "${{ github.event.action }}" != "synchronize" ] || [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            before="$base"
+          fi
+
+          has_manual=false
+          if git diff --name-only "origin/main...HEAD" -- '.changeset/*.md' \
+              | grep -vxF "$auto_file" | grep -q .; then
+            has_manual=true
+          fi
+
+          has_new_conventional=false
+          rm -rf /tmp/gate-check && mkdir -p /tmp/gate-check
+          node .github/scripts/generate-changeset.mjs \
+            --from "$before" --to "${{ github.event.pull_request.head.sha }}" \
+            --out-dir /tmp/gate-check --filename probe.md
+          if [ -f /tmp/gate-check/probe.md ]; then
+            has_new_conventional=true
+          fi
+
+          if [ "$has_manual" = true ] || [ "$has_new_conventional" = true ]; then
+            echo "should-release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-release=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "has-manual=$has_manual" >> "$GITHUB_OUTPUT"
+          echo "auto-file=$auto_file" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate the automatic changeset for this PR
+        if: steps.gate.outputs.should-release == 'true' && steps.gate.outputs.has-manual == 'false'
+        run: |
+          node .github/scripts/generate-changeset.mjs \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to "${{ github.event.pull_request.head.sha }}" \
+            --out-dir .changeset \
+            --filename "auto-pr-${{ github.event.pull_request.number }}.md"
+
+      - name: Commit the automatic changeset
+        if: steps.gate.outputs.should-release == 'true' && steps.gate.outputs.has-manual == 'false'
+        run: |
+          if git diff --quiet -- "${{ steps.gate.outputs.auto-file }}"; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "${{ steps.gate.outputs.auto-file }}"
+          git commit -m "chore(changeset): update changeset for PR #${{ github.event.pull_request.number }}"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
       - name: Build packages
+        if: steps.gate.outputs.should-release == 'true'
         run: pnpm turbo run build --filter=./packages/*
 
-      - name: Check for pending changesets
+      - name: Read what will be released
+        if: steps.gate.outputs.should-release == 'true'
         id: status
-        run: |
-          pnpm exec changeset status --since=origin/main --output=status.json
-          node -e '
-            const { releases } = require("./status.json");
-            const has = releases.length > 0;
-            console.log(has ? `Packages to snapshot: ${releases.map((r) => r.name).join(", ")}` : "No pending changeset, skipping.");
-            require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `has-changesets=${has}\n`);
-          '
+        run: pnpm exec changeset status --output=status.json
 
       - name: Version as a snapshot
-        if: steps.status.outputs.has-changesets == 'true'
+        if: steps.gate.outputs.should-release == 'true'
         run: pnpm exec changeset version --snapshot pr${{ github.event.pull_request.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish snapshot
-        if: steps.status.outputs.has-changesets == 'true'
-        id: publish
+        if: steps.gate.outputs.should-release == 'true'
         run: |
           pnpm exec changeset publish --tag pr${{ github.event.pull_request.number }}
           node -e '
@@ -88,7 +151,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on the pull request
-        if: steps.status.outputs.has-changesets == 'true'
+        if: steps.gate.outputs.should-release == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -101,7 +164,7 @@ jobs:
               "",
               list,
               "",
-              "It won't be promoted by merging this PR: the real version is decided by the changeset already in it, through the normal release flow.",
+              "It won't be promoted by merging this PR: the changeset committed here goes in as-is, and the real version is decided by the normal release flow.",
             ].join("\n");
 
             const { data: comments } = await github.rest.issues.listComments({
