@@ -69,7 +69,18 @@ importers:
 
   packages/test-toolkit: {}
 
-  packages/value-objects: {}
+  packages/value-objects:
+    dependencies:
+      '@zipframes/core':
+        specifier: workspace:^
+        version: link:../core
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.7(vitest@3.2.7(@types/node@26.6.1)(jiti@2.6.1)(yaml@2.9.1))
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@26.6.1)(jiti@2.6.1)(yaml@2.9.1)
 
 packages:
 

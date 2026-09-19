@@ -4,13 +4,13 @@ Value objects genéricos e a base para criar os seus dentro de cada serviço.
 
 ## O que é
 
-- value objects universais: e-mail, telefone, CPF, CNPJ, CEP e endereço
+- value objects universais: e-mail, telefone, CPF e CNPJ
 - a base que padroniza criação validada, imutabilidade, igualdade por valor, serialização e branded type
 
 O contrato da base está em [docs/value-objects.md](../../docs/value-objects.md).
 
 ## Status
 
-Estrutura e documentação definidas. Setup, configuração e implementação pendentes.
+`base`, `Email`, `Phone`, `Cpf` e `Cnpj` implementados, com cobertura de testes de 100%.
 
-Ainda não depende de `@zipframes/core`: a dependência entra no `package.json` junto com o primeiro código que a usa, não antes.
+Depende de `@zipframes/core` (`Result` e `Brand`), declarado com `workspace:^`.
