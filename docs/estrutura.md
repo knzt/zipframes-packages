@@ -61,11 +61,17 @@ Cada pasta de serviço traz os schemas dos eventos que aquele serviço publica e
 
 ```
 src/
-├── base/            # o value object base
-├── contact/         # e-mail, telefone
-├── document/        # CPF, CNPJ
-└── address/         # CEP, endereço
+├── base/            # o value object base (defineValueObject)
+├── email/           # Email
+├── phone/           # Phone (telefone brasileiro)
+├── cpf/             # Cpf
+└── cnpj/            # Cnpj
 ```
+
+Uma pasta por value object, e não agrupada por categoria: `Cpf` e `Cnpj` ficam
+lado a lado com `Email` e `Phone`, já que são poucos e a busca por nome do
+arquivo já resolve. `Address`/`CEP` saiu do escopo por não ser usado em
+nenhum lugar do domínio do ZipFrames — pode voltar se um serviço precisar.
 
 Só entra o que é universal. O contrato da base está em [value-objects.md](value-objects.md).
 
