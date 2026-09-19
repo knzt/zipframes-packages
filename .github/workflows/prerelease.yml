@@ -58,6 +58,15 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
+      # actions/checkout only creates a local branch for the ref it checks
+      # out (the PR branch). changesets reads `baseBranch` from
+      # .changeset/config.json ("main") as a literal local branch name for
+      # `git merge-base`, so without this, every command that needs to
+      # diff against main fails with "Failed to find where HEAD diverged
+      # from main", even though origin/main exists.
+      - name: Ensure a local main branch exists for changesets to diff against
+        run: git branch main origin/main
+
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
