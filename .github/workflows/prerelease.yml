@@ -44,7 +44,14 @@ jobs:
     runs-on: ubuntu-latest
     # Forks don't carry the token this job needs to publish, and shouldn't be
     # trusted with one. Their PRs simply don't get a snapshot.
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    #
+    # The "Version Packages" PR that changesets/action opens is also
+    # excluded: by the time it exists, the pending changesets have already
+    # been consumed into version bumps, so there is nothing left to snapshot,
+    # and `changeset version --snapshot` would just fail on an empty queue.
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !startsWith(github.event.pull_request.head.ref, 'changeset-release/')
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,12 +117,19 @@ jobs:
       - name: Commit the automatic changeset
         if: steps.gate.outputs.should-release == 'true' && steps.gate.outputs.has-manual == 'false'
         run: |
-          if git diff --quiet -- "${{ steps.gate.outputs.auto-file }}"; then
+          auto_file="${{ steps.gate.outputs.auto-file }}"
+
+          # `git diff --quiet` alone ignores untracked files, so it reports
+          # "no change" the very first time this file is created — staging it
+          # first makes the comparison (index vs HEAD) see the addition too,
+          # not just later edits to an already-tracked file.
+          git add "$auto_file"
+          if git diff --cached --quiet -- "$auto_file"; then
             exit 0
           fi
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "${{ steps.gate.outputs.auto-file }}"
           git commit -m "chore(changeset): update changeset for PR #${{ github.event.pull_request.number }}"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
